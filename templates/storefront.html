@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>{{.Sandbox.BrandName}} Storefront</title>
+        <link rel="stylesheet" href="/static/app.css" />
+        <script type="module" src="/static/app.js"></script>
+    </head>
+    <body
+        class="store palette-{{.Sandbox.Palette}}"
+        data-sandbox-slug="{{.Sandbox.Slug}}"
+        data-product-price-cents="{{.Cart.Product.PriceCents}}"
+        data-discount-cents="{{.Cart.DiscountCents}}"
+        data-applied-code="{{.Cart.DiscountCode}}"
+    >
+        {{template "sandbox_bar" .}}
+        <header class="shop-header">
+            <nav class="shop-nav">
+                <a class="brand-stack" href="/storefront/{{.Sandbox.Slug}}"
+                    ><span>{{.Sandbox.BrandName}}</span></a
+                >
+                <div class="nav-links">
+                    <a href="/storefront/{{.Sandbox.Slug}}">Shop</a>
+                    <a href="/storefront/{{.Sandbox.Slug}}/apps/rewards"
+                        >Rewards</a
+                    >
+                </div>
+            </nav>
+        </header>
+
+        <main class="shop-layout">
+            <section
+                class="product-media"
+                aria-label="{{.Cart.Product.Name}} product preview"
+            >
+                <img
+                    src="{{.Cart.Product.ImageURL}}"
+                    alt="{{.Cart.Product.Name}}"
+                />
+            </section>
+
+            <section class="product-detail">
+                <p class="breadcrumb">{{.Cart.Product.CategoryPath}}</p>
+                <h1>{{.Cart.Product.Name}}</h1>
+                <p class="rating">
+                    {{.Cart.Product.Rating}}
+                    <span>({{.Cart.Product.ReviewCount}})</span>
+                </p>
+                <p class="price">{{money .Cart.Product.PriceCents}}</p>
+                <p class="product-copy">{{.Cart.Product.Copy}}</p>
+                <div class="purchase-row">
+                    <div class="qty" aria-label="Quantity">
+                        <button type="button" data-qty-step="-1">−</button
+                        ><span data-qty-value>{{.Cart.Product.Quantity}}</span
+                        ><button type="button" data-qty-step="1">+</button>
+                    </div>
+                    <button
+                        class="button primary"
+                        type="button"
+                        data-add-to-cart
+                    >
+                        Add to Cart
+                    </button>
+                </div>
+            </section>
+
+            <aside class="cart-preview panel">
+                <h2>
+                    Your Cart (<span data-cart-count
+                        >{{.Cart.Product.Quantity}}</span
+                    >)
+                </h2>
+                <div class="cart-item">
+                    <img
+                        class="cart-thumb"
+                        src="{{.Cart.Product.ThumbnailURL}}"
+                        alt=""
+                    />
+                    <div>
+                        <strong>{{.Cart.Product.Name}}</strong
+                        ><small>{{money .Cart.Product.PriceCents}}</small>
+                    </div>
+                </div>
+                <form
+                    class="discount-form"
+                    action="/storefront/{{.Sandbox.Slug}}/apply-discount"
+                    method="post"
+                    data-discount-form
+                >
+                    <label>
+                        <span>Discount Code</span>
+                        <input
+                            name="code"
+                            value="{{if .Cart.HasDiscount}}{{.Cart.DiscountCode}}{{else}}{{.Cart.PendingDiscountCode}}{{end}}"
+                            placeholder="Enter discount code"
+                            autocomplete="off"
+                            data-discount-input
+                        />
+                    </label>
+                    <button class="button secondary" type="submit">
+                        Apply
+                    </button>
+                    <p class="form-message muted" data-discount-message>
+                        {{if .Cart.HasDiscount}}Discount applied.{{else if
+                        .Cart.HasPendingDiscount}}Rewards code ready. Apply it
+                        in the cart.{{end}}
+                    </p>
+                </form>
+                <dl>
+                    <div>
+                        <dt>Subtotal</dt>
+                        <dd id="cart-subtotal">
+                            {{money .Cart.SubtotalCents}}
+                        </dd>
+                    </div>
+                    <div class="cart-discount-line">
+                        <dt>Discount</dt>
+                        <dd id="cart-discount">
+                            {{if .Cart.HasDiscount}}-{{money
+                            .Cart.DiscountCents}}{{else}}None{{end}}
+                        </dd>
+                    </div>
+                    <div class="cart-total">
+                        <dt>Total</dt>
+                        <dd id="cart-total">{{money .Cart.TotalCents}}</dd>
+                    </div>
+                </dl>
+                <form
+                    action="/storefront/{{.Sandbox.Slug}}/buy"
+                    method="post"
+                    class="cart-buy-form"
+                    data-buy-form
+                >
+                    <input
+                        type="hidden"
+                        name="quantity"
+                        value="{{.Cart.Product.Quantity}}"
+                        data-buy-quantity
+                    />
+                    <button class="button primary full" type="submit">
+                        Buy Cart
+                    </button>
+                </form>
+                {{if .Orders}}
+                <div class="orders-list">
+                    <h3>Saved orders</h3>
+                    {{range .Orders}}
+                    <p>
+                        #{{.ID}} {{.ProductName}} total {{money
+                        .TotalCents}}{{if .DiscountCode}} with
+                        {{.DiscountCode}}{{end}}
+                    </p>
+                    {{end}}
+                </div>
+                {{end}}
+            </aside>
+        </main>
+        <div class="toast-region" aria-live="polite" aria-atomic="true"></div>
+    </body>
+</html>

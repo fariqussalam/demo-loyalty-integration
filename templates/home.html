@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Loyalty Blocks Integration</title>
+        <link rel="stylesheet" href="/static/app.css" />
+        <script type="module" src="/static/app.js"></script>
+    </head>
+    <body>
+        <main class="lab-page">
+            <section class="lab-intro">
+                <h1>Loyalty Blocks Integration</h1>
+                <span aria-hidden="true"></span>
+            </section>
+
+            <section class="lab-grid home-flow">
+                <div class="flow-label centered">
+                    <b>1</b><span>Generate Sandbox</span>
+                </div>
+                <section class="panel setup">
+                    <div class="panel-title">
+                        <i data-lucide="wand-sparkles" class="icon"></i>
+                        <h2>Generate a Loyalty Sandbox</h2>
+                    </div>
+                    <form
+                        method="post"
+                        action="/integrations"
+                        class="form-grid"
+                    >
+                        <label>
+                            <span>Brand Name</span>
+                            <input
+                                name="brand_name"
+                                value="{{.DefaultBrand}}"
+                                autocomplete="off"
+                            />
+                        </label>
+                        <label>
+                            <span>Color Palette</span>
+                            <select name="palette">
+                                <option value="black" selected>
+                                    White + Black
+                                </option>
+                                <option value="red">White + Red</option>
+                                <option value="yellow">White + Yellow</option>
+                            </select>
+                        </label>
+                        <label>
+                            <span>Discount Code Template</span>
+                            <input
+                                name="discount_template"
+                                value="{BRAND}-{VALUE}-{CUSTOMER}"
+                                autocomplete="off"
+                            />
+                        </label>
+                        <p class="hint">
+                            {BRAND}, {VALUE}, {CUSTOMER} are variables.
+                        </p>
+                        <button class="button primary full" type="submit">
+                            Generate Sandbox
+                        </button>
+                    </form>
+                </section>
+
+                {{if .Sandboxes}}
+                <section class="recent-panel">
+                    <div class="section-head">
+                        <h2>Sandboxes</h2>
+                        <form
+                            method="post"
+                            action="/integrations/delete-all"
+                            onsubmit="
+                                return confirm(
+                                    'Delete all sandboxes and their demo data?',
+                                );
+                            "
+                        >
+                            <button class="button danger" type="submit">
+                                <i data-lucide="trash-2" class="icon"></i>
+                                Delete All
+                            </button>
+                        </form>
+                    </div>
+                    <div class="recent-list">
+                        {{range .Sandboxes}}
+                        <div class="recent-item">
+                            <a href="/integrations/{{.Slug}}"
+                                ><strong>{{.BrandName}}</strong
+                                ><span>/{{.Slug}}</span></a
+                            >
+                            <form
+                                method="post"
+                                action="/integrations/{{.Slug}}/delete"
+                                onsubmit="return confirm('Delete {{.BrandName}} and its demo data?')"
+                            >
+                                <button
+                                    class="button danger icon-button"
+                                    type="submit"
+                                    aria-label="Delete {{.BrandName}}"
+                                >
+                                    <i data-lucide="trash-2" class="icon"></i>
+                                </button>
+                            </form>
+                        </div>
+                        {{end}}
+                    </div>
+                </section>
+                {{end}}
+            </section>
+        </main>
+        <script src="https://unpkg.com/lucide@latest"></script>
+        <script>
+            lucide.createIcons();
+        </script>
+    </body>
+</html>

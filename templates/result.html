@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>{{.Sandbox.BrandName}} sandbox</title>
+        <link rel="stylesheet" href="/static/app.css" />
+        <script type="module" src="/static/app.js"></script>
+    </head>
+    <body>
+        {{template "sandbox_bar" .}}
+        <main class="lab-page">
+            <section class="lab-intro compact">
+                <h1>Sandbox Generated</h1>
+                <p>{{.Sandbox.BrandName}} is ready.</p>
+                <a class="back-link" href="/">Return to sandbox setup</a>
+                <span aria-hidden="true"></span>
+            </section>
+
+            <section class="control-center">
+                <div class="flow-label"><b>2</b><span>Result Page</span></div>
+                <section class="panel result-card">
+                    <div class="success-row">
+                        <button
+                            class="button quiet"
+                            type="button"
+                            data-copy="{{.StorefrontURL}}
+	{{.RewardsPageURL}}
+	{{.IframeURL}}
+	{{.AdminURL}}"
+                        >
+                            <i data-lucide="copy" class="icon"></i>Copy All
+                            Links
+                        </button>
+                    </div>
+
+                    <div class="link-stack">
+                        <a class="link-card" href="{{.StorefrontURL}}" target="_blank" rel="noopener">
+                            <span class="link-icon">S</span>
+                            <span
+                                ><strong>Storefront Preview URL</strong
+                                ><small>{{.StorefrontURL}}</small></span
+                            >
+                            <em>Open Storefront</em>
+                        </a>
+                        <a class="link-card" href="{{.RewardsPageURL}}" target="_blank" rel="noopener">
+                            <span class="link-icon">R</span>
+                            <span
+                                ><strong>Rewards Page URL</strong
+                                ><small>{{.RewardsPageURL}}</small></span
+                            >
+                            <em>Open Rewards Page</em>
+                        </a>
+                        <a class="link-card" href="{{.IframeURL}}" target="_blank" rel="noopener">
+                            <span class="link-icon">B</span>
+                            <span
+                                ><strong>iframe Block URL</strong
+                                ><small>{{.IframeURL}}</small></span
+                            >
+                            <em>Open Block</em>
+                        </a>
+                        <a class="link-card" href="{{.AdminURL}}" target="_blank" rel="noopener">
+                            <span class="link-icon">A</span>
+                            <span
+                                ><strong>Admin / Debug URL</strong
+                                ><small>{{.AdminURL}}</small></span
+                            >
+                            <em>Open Admin</em>
+                        </a>
+                    </div>
+
+                    <div class="install-box">
+                        <div class="section-head">
+                            <div>
+                                <h2>Install Snippet (iframe)</h2>
+                                <p class="muted">
+                                    Paste where the loyalty block should appear.
+                                </p>
+                            </div>
+                            <button
+                                class="button quiet"
+                                type="button"
+                                data-copy="{{.InstallSnippet}}"
+                            >
+                                <i data-lucide="copy" class="icon"></i>Copy
+                            </button>
+                        </div>
+                        <pre class="code"><code>{{.InstallSnippet}}</code></pre>
+                    </div>
+                    <div class="result-actions">
+                        <a class="button secondary" href="/">Back to setup</a>
+                        <form
+                            method="post"
+                            action="/integrations/{{.Sandbox.Slug}}/delete"
+                            onsubmit="return confirm('Delete {{.Sandbox.BrandName}} and its demo data?')"
+                        >
+                            <button class="button danger" type="submit">
+                                Delete Merchant
+                            </button>
+                        </form>
+                    </div>
+                </section>
+            </section>
+        </main>
+        <script src="https://unpkg.com/lucide@latest"></script>
+        <script>
+            lucide.createIcons();
+        </script>
+    </body>
+</html>

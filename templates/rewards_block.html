@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>{{.Sandbox.BrandName}} Rewards7</title>
+        <link rel="stylesheet" href="/static/app.css" />
+        <script type="module" src="/static/block.js"></script>
+    </head>
+    <body
+        class="block palette-{{.Sandbox.Palette}}"
+        data-sandbox-slug="{{.Sandbox.Slug}}"
+    >
+        <main class="block-surface">
+            {{if .Customer}}
+            <section class="loyalty-topbar">
+                <div class="loyalty-session">
+                    <div class="avatar">{{printf "%.2s" .Customer.Name}}</div>
+                    <button class="button quiet" type="button" data-logout>
+                        Log Out
+                    </button>
+                </div>
+            </section>
+            <section class="loyalty-hero">
+                <div>
+                    <h1>Hi, {{.Customer.Name}}</h1>
+                    <p class="tier">{{.Customer.Tier}}</p>
+                </div>
+                <div class="points-box">
+                    <span>Your Points</span><strong>{{.Customer.Points}}</strong
+                    ><em>points</em>
+                </div>
+            </section>
+            <section class="reward-row">
+                <div class="reward-icon" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M20 12v10H4V12" />
+                        <path d="M2 7h20v5H2z" />
+                        <path d="M12 22V7" />
+                        <path d="M12 7H7.5a2.5 2.5 0 1 1 0-5C11 2 12 7 12 7z" />
+                        <path d="M12 7h4.5a2.5 2.5 0 1 0 0-5C13 2 12 7 12 7z" />
+                    </svg>
+                </div>
+                <div>
+                    <h2>{{.Reward.Title}}</h2>
+                    <p>Redeem for {{.Reward.CostPoints}} points.</p>
+                </div>
+                {{if ge .Customer.Points .Reward.CostPoints}}
+                <button
+                    class="button primary"
+                    type="button"
+                    data-open-popup="/popups/{{.Sandbox.Slug}}/redeem?auth={{.Customer.Token}}"
+                >
+                    {{.Reward.RedeemLabel}}
+                </button>
+                {{else if .RedeemedCode}}
+                <span class="status success">Redeemed</span>
+                {{else}}
+                <span class="status">Redeemed or unavailable</span>
+                {{end}}
+            </section>
+            {{if .RedeemedCode}}
+            <section class="discount-code-box">
+                <span>Redeemed discount code</span>
+                <strong>{{.RedeemedCode}}</strong>
+            </section>
+            {{end}}
+            <section class="points-section">
+                <div class="mini-panel">
+                    <div class="section-head">
+                        <h2>Points Changes</h2>
+                    </div>
+                    {{if .PointsHistory}}
+                    <div class="history-list">
+                        {{range .PointsHistory}}
+                        <p>
+                            <span>{{.CreatedAt.Format "Jan 2"}}</span
+                            ><span class="history-title"
+                                >{{.Title}}{{if
+                                .Code}}<em>{{.Code}}</em>{{end}}</span
+                            ><strong
+                                class="{{if lt .Points 0}}negative{{else}}positive{{end}}"
+                                >{{if ge .Points 0}}+{{end}}{{.Points}}</strong
+                            >
+                        </p>
+                        {{end}}
+                    </div>
+                    {{else}}
+                    <p class="muted">No points changes yet.</p>
+                    {{end}}
+                </div>
+            </section>
+            {{else}}
+            <section class="logged-out">
+                <img
+                    class="reward-product-image"
+                    src="https://images.pexels.com/photos/4735943/pexels-photo-4735943.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=220"
+                    alt="White serum bottle"
+                />
+                <h1>Welcome to {{.Sandbox.BrandName}} Rewards</h1>
+                <p>Join to earn points and unlock rewards.</p>
+                <div class="button-row">
+                    <button
+                        class="button primary"
+                        type="button"
+                        data-open-popup="/popups/{{.Sandbox.Slug}}/signup"
+                    >
+                        Sign Up
+                    </button>
+                    <button
+                        class="button secondary"
+                        type="button"
+                        data-open-popup="/popups/{{.Sandbox.Slug}}/login"
+                    >
+                        Log In
+                    </button>
+                </div>
+                <small
+                    >By continuing, you agree to our Terms and Privacy
+                    Policy.</small
+                >
+            </section>
+            {{end}}
+        </main>
+    </body>
+</html>

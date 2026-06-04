@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Done</title>
+</head>
+<body>
+  <script>
+    const auth = "{{.Auth}}";
+    const code = "{{.DiscountCode}}";
+    const returnTo = "{{.ReturnTo}}";
+    if (returnTo && window.parent === window) {
+      const url = new URL(returnTo, window.location.origin);
+      if (auth) url.searchParams.set("auth", auth);
+      location.replace(url.pathname + url.search);
+    } else {
+      parent.postMessage({
+        blockClientCall: "{{.Callback}}",
+        auth,
+        code
+      }, "*");
+    }
+  </script>
+</body>
+</html>

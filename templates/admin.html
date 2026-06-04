@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>{{.Sandbox.BrandName}} Admin</title>
+        <link rel="stylesheet" href="/static/app.css" />
+        <script type="module" src="/static/app.js"></script>
+    </head>
+    <body class="admin-body">
+        {{template "sandbox_bar" .}}
+        <main class="admin-layout">
+            <aside class="admin-sidebar">
+                <a
+                    class="brand-stack inverse"
+                    href="/integrations/{{.Sandbox.Slug}}"
+                    ><span>{{.Sandbox.BrandName}}</span></a
+                >
+                <nav class="admin-nav">
+                    <a aria-current="page" href="/admin/{{.Sandbox.Slug}}"
+                        >Overview</a
+                    >
+                </nav>
+            </aside>
+
+            <section class="admin-main">
+                {{if .Customer}}
+                <header class="admin-header">
+                    <div>
+                        <a class="back-link" href="/admin/{{.Sandbox.Slug}}"
+                            ><i data-lucide="arrow-left" class="icon"></i
+                            >Customers</a
+                        >
+                        <h1>{{.Customer.Name}}</h1>
+                        <p class="muted">{{.Customer.Email}}</p>
+                    </div>
+                    <a
+                        class="button quiet"
+                        href="/admin/{{.Sandbox.Slug}}/customers/{{.Customer.ID}}"
+                        ><i data-lucide="refresh-cw" class="icon"></i>Refresh</a
+                    >
+                </header>
+
+                <section class="customer-summary">
+                    <div>
+                        <span>Customer</span>
+                        <strong>{{.Customer.Name}}</strong>
+                        <small>{{.Customer.Email}}</small>
+                    </div>
+                    <div>
+                        <span>Customer ID</span>
+                        <strong>cust_{{.Customer.ID}}</strong>
+                        <small>Auth token present</small>
+                    </div>
+                    <div>
+                        <span>Loyalty Tier</span>
+                        <strong>{{.Customer.Tier}}</strong>
+                        <small>Current sandbox tier</small>
+                    </div>
+                    <div>
+                        <span>Points Balance</span>
+                        <strong>{{.Customer.Points}}</strong>
+                        <small>Live balance</small>
+                    </div>
+                </section>
+
+                <section class="admin-grid">
+                    <div class="panel">
+                        <div class="section-head">
+                            <h2>Customer Activity</h2>
+                            <span class="muted">Latest customer events</span>
+                        </div>
+                        {{range .Activities}}
+                        <details class="event">
+                            <summary>
+                                <time>{{.CreatedAt.Format "3:04 PM"}}</time
+                                >{{.Title}}
+                            </summary>
+                            <pre>{{jsonPretty .Payload}}</pre>
+                        </details>
+                        {{else}}
+                        <p class="muted">No customer activity yet.</p>
+                        {{end}}
+                    </div>
+                    <div class="panel">
+                        <div class="section-head">
+                            <h2>Integration Trace</h2>
+                            <span class="muted">Customer-linked calls</span>
+                        </div>
+                        {{range .Traces}}
+                        <details class="event">
+                            <summary>
+                                <time>{{.CreatedAt.Format "3:04 PM"}}</time
+                                >{{.Title}}
+                            </summary>
+                            <pre>{{jsonPretty .Payload}}</pre>
+                        </details>
+                        {{else}}
+                        <p class="muted">No customer trace yet.</p>
+                        {{end}}
+                    </div>
+                </section>
+                {{else}}
+                <header class="admin-header">
+                    <div>
+                        <h1>Customers</h1>
+                        <p class="muted">Sandbox: {{.Sandbox.Slug}}</p>
+                    </div>
+                    <a class="button quiet" href="/admin/{{.Sandbox.Slug}}"
+                        ><i data-lucide="refresh-cw" class="icon"></i>Refresh</a
+                    >
+                </header>
+
+                <section class="panel customer-list-panel">
+                    <div class="section-head">
+                        <h2>Customer List</h2>
+                        <span class="muted">{{len .Customers}} customers</span>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="customer-table">
+                            <thead>
+                                <tr>
+                                    <th>Customer</th>
+                                    <th>Customer ID</th>
+                                    <th>Tier</th>
+                                    <th>Points</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{range .Customers}}
+                                <tr>
+                                    <td>
+                                        <strong>{{.Name}}</strong>
+                                        <small>{{.Email}}</small>
+                                    </td>
+                                    <td>cust_{{.ID}}</td>
+                                    <td>{{.Tier}}</td>
+                                    <td>{{.Points}}</td>
+                                    <td>
+                                        <a
+                                            class="row-action"
+                                            href="/admin/{{$.Sandbox.Slug}}/customers/{{.ID}}"
+                                            >View</a
+                                        >
+                                    </td>
+                                </tr>
+                                {{else}}
+                                <tr>
+                                    <td colspan="5">
+                                        <span class="muted"
+                                            >No customers yet.</span
+                                        >
+                                    </td>
+                                </tr>
+                                {{end}}
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                {{end}}
+            </section>
+        </main>
+        <script src="https://unpkg.com/lucide@latest"></script>
+        <script>
+            lucide.createIcons();
+        </script>
+    </body>
+</html>

@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>{{.PopupKind}}</title>
+        <link rel="stylesheet" href="/static/app.css" />
+    </head>
+    <body class="popup-body palette-{{.Sandbox.Palette}}">
+        <main class="popup-card">
+            {{if eq .PopupKind "signup"}}
+            <p class="popup-kicker">
+                Welcome to {{.Sandbox.BrandName}} Rewards
+            </p>
+            <h1>Create your account to continue.</h1>
+            <div class="auth-tabs">
+                <a
+                    href="/popups/{{.Sandbox.Slug}}/signup{{if .ReturnTo}}?return_to={{urlquery .ReturnTo}}{{end}}"
+                    aria-current="page"
+                    >Sign Up</a
+                ><a
+                    href="/popups/{{.Sandbox.Slug}}/login{{if .ReturnTo}}?return_to={{urlquery .ReturnTo}}{{end}}"
+                    >Log In</a
+                >
+            </div>
+            <form
+                method="post"
+                action="/popups/{{.Sandbox.Slug}}/signup"
+                class="form-grid"
+            >
+                <input type="hidden" name="return_to" value="{{.ReturnTo}}" />
+                <label
+                    ><span>Full Name</span
+                    ><input name="name" value="{{.RandomName}}"
+                /></label>
+                <label
+                    ><span>Email</span
+                    ><input name="email" value="{{.RandomEmail}}"
+                /></label>
+                <label
+                    ><span>Password</span
+                    ><input value="password" type="password" readonly
+                /></label>
+                <button class="button primary full" type="submit">
+                    Create Account
+                </button>
+            </form>
+            {{else if eq .PopupKind "login"}}
+            <p class="popup-kicker">Welcome back</p>
+            <h1>Choose an account.</h1>
+            <div class="auth-tabs">
+                <a
+                    href="/popups/{{.Sandbox.Slug}}/signup{{if .ReturnTo}}?return_to={{urlquery .ReturnTo}}{{end}}"
+                    >Sign Up</a
+                ><a
+                    href="/popups/{{.Sandbox.Slug}}/login{{if .ReturnTo}}?return_to={{urlquery .ReturnTo}}{{end}}"
+                    aria-current="page"
+                    >Log In</a
+                >
+            </div>
+            <form
+                method="post"
+                action="/popups/{{.Sandbox.Slug}}/login"
+                class="form-grid"
+            >
+                <input type="hidden" name="return_to" value="{{.ReturnTo}}" />
+                {{range .Customers}}
+                <label class="radio-row"
+                    ><input
+                        type="radio"
+                        name="customer_id"
+                        value="{{.ID}}"
+                        {{if
+                        eq
+                        .Email
+                        $.SelectedEmail}}checked{{end}}
+                    />
+                    {{.Name}} <span>{{.Email}}</span></label
+                >
+                {{end}}
+                <button class="button primary full" type="submit">
+                    Continue
+                </button>
+            </form>
+            {{else if eq .PopupKind "redeem"}}
+            <p class="popup-kicker">Reward redemption</p>
+            <h1>{{.Reward.RedeemLabel}}</h1>
+            {{if .Error}}
+            <p>{{.Error}}</p>
+            {{else}}
+            <p>
+                Exchange {{.Reward.CostPoints}} points for a single-use {{money
+                .Reward.ValueCents}} discount code. The code is applied to the
+                merchant cart after this popup closes.
+            </p>
+            <form method="post" action="/popups/{{.Sandbox.Slug}}/redeem">
+                <input type="hidden" name="auth" value="{{.Customer.Token}}" />
+                <input type="hidden" name="return_to" value="{{.ReturnTo}}" />
+                <button class="button primary full" type="submit">
+                    Confirm Redemption
+                </button>
+            </form>
+            {{end}} {{end}}
+        </main>
+    </body>
+</html>

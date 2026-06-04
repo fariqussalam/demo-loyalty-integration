@@ -1,0 +1,18 @@
+lab.db
+lab.db-*
+
+# Go build/test outputs
+bin/
+dist/
+*.test
+*.out
+coverage.*
+
+# Local editor and OS files
+.DS_Store
+.idea/
+.vscode/
+
+# Runtime logs and temp files
+*.log
+tmp/
