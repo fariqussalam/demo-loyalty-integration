@@ -156,6 +156,55 @@
                 font-weight: 750;
             }
 
+            .discount-form {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) auto;
+                gap: 8px;
+                margin-top: 14px;
+            }
+
+            .discount-form input {
+                min-width: 0;
+                border: 1px solid var(--line);
+                border-radius: 6px;
+                padding: 10px 12px;
+                background: var(--surface);
+                color: var(--ink);
+                font: inherit;
+            }
+
+            .discount-form button {
+                border: 1px solid var(--line);
+                border-radius: 6px;
+                padding: 10px 14px;
+                background: var(--surface);
+                color: var(--ink);
+                cursor: pointer;
+                font: inherit;
+                font-weight: 700;
+            }
+
+            .discount-message {
+                grid-column: 1 / -1;
+                min-height: 18px;
+                margin: 0;
+                color: var(--muted);
+                font-size: 12px;
+            }
+
+            .discount-message.success {
+                color: var(--accent);
+            }
+
+            .cart-total {
+                display: flex;
+                justify-content: space-between;
+                margin: 4px 0 0;
+                padding-top: 12px;
+                border-top: 1px solid var(--line);
+                font-size: 13px;
+            }
+
             .rewards-section {
                 width: min(100% - 40px, 1180px);
                 margin: 0 auto 70px;
@@ -262,6 +311,9 @@
                     flex-direction: column;
                     gap: 6px;
                 }
+                .product-image {
+                    width: 100%;
+                }
             }
         </style>
     </head>
@@ -308,6 +360,25 @@
                     <button class="primary-button" type="button">
                         Add to Cart
                     </button>
+                    <form id="discount-form" class="discount-form">
+                        <input
+                            id="discount-code"
+                            name="discount-code"
+                            placeholder="Discount code"
+                            autocomplete="off"
+                            aria-label="Discount code"
+                        />
+                        <button type="submit">Apply</button>
+                        <p
+                            id="discount-message"
+                            class="discount-message"
+                            role="status"
+                        ></p>
+                    </form>
+                    <p class="cart-total">
+                        <span>Cart total</span>
+                        <strong id="cart-total">$24.00</strong>
+                    </p>
                 </div>
             </section>
 
@@ -318,11 +389,11 @@
                 </div>
                 <iframe
                     id="rewards-frame"
+                    class="rewards-frame"
                     title="North and Pine Rewards"
                     src="https://loyalty-integration.fariq.xyz/blocks/north-and-pine/Rewards7"
                     sandbox="allow-top-navigation allow-scripts allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin"
                     allow="clipboard-write"
-                    style="border: 0; width: 100%; height: 1500px"
                 ></iframe>
             </section>
         </main>
@@ -345,12 +416,20 @@
         <div id="toast" class="toast" role="status" hidden></div>
 
         <script>
-            const backendOrigin = "http://localhost:8080";
             const rewardsFrame = document.getElementById("rewards-frame");
+            const rewardsURL = new URL(rewardsFrame.src);
+            const backendOrigin = rewardsURL.origin;
+            const merchantSlug = rewardsURL.pathname.split("/")[2];
             const popup = document.getElementById("rewards-popup");
             const popupFrame = document.getElementById("popup-frame");
             const toast = document.getElementById("toast");
-            const authKey = "standaloneRewardsAuth";
+            const discountForm = document.getElementById("discount-form");
+            const discountInput = document.getElementById("discount-code");
+            const discountMessage =
+                document.getElementById("discount-message");
+            const cartTotal = document.getElementById("cart-total");
+            const authKey = `standaloneRewardsAuth:${merchantSlug}`;
+            const discountKey = `standaloneRewardsCode:${merchantSlug}`;
 
             const withBackendOrigin = (value) =>
                 new URL(value, backendOrigin).href;
@@ -379,12 +458,34 @@
             const storedAuth = localStorage.getItem(authKey);
             if (storedAuth) updateRewardsFrame(storedAuth);
 
+            const storedDiscount = localStorage.getItem(discountKey);
+            if (storedDiscount) discountInput.value = storedDiscount;
+
             document
                 .getElementById("close-popup")
                 .addEventListener("click", closePopup);
             popup.addEventListener("close", () =>
                 popupFrame.removeAttribute("src"),
             );
+
+            discountForm.addEventListener("submit", (event) => {
+                event.preventDefault();
+                const code = discountInput.value.trim();
+                const redeemedCode = localStorage.getItem(discountKey);
+
+                discountMessage.classList.remove("success");
+                if (!code || !redeemedCode || code !== redeemedCode) {
+                    discountMessage.textContent =
+                        "Redeem a rewards code before applying it.";
+                    return;
+                }
+
+                discountMessage.textContent =
+                    "Discount applied. Cart total is now $14.00.";
+                discountMessage.classList.add("success");
+                cartTotal.textContent = "$14.00";
+                showToast(`Discount code ${code} applied.`);
+            });
 
             window.addEventListener("message", (event) => {
                 if (
@@ -413,14 +514,24 @@
                         updateRewardsFrame(data.auth);
                     }
                     if (data.code) {
+                        localStorage.setItem(discountKey, data.code);
+                        discountInput.value = data.code;
+                        discountMessage.textContent =
+                            "Rewards code ready. Apply it to the cart.";
+                        discountMessage.classList.remove("success");
                         showToast(
-                            `Discount code ${data.code} redeemed. Apply it in the merchant cart.`,
+                            `Discount code ${data.code} redeemed and added to the cart.`,
                         );
                     }
                 }
 
                 if (data.blockClientCall === "Logout1") {
                     localStorage.removeItem(authKey);
+                    localStorage.removeItem(discountKey);
+                    discountInput.value = "";
+                    discountMessage.textContent = "";
+                    discountMessage.classList.remove("success");
+                    cartTotal.textContent = "$24.00";
                     updateRewardsFrame("");
                 }
             });
