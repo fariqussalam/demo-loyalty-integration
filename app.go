@@ -75,11 +75,13 @@ func (a *app) sandboxFromRequest(w http.ResponseWriter, r *http.Request) (sandbo
 	return s, true
 }
 
-func (a *app) links(s sandbox, auth string) linkData {
-	iframe := blockURL(s, auth)
+func (a *app) links(r *http.Request, s sandbox, auth string) linkData {
+	siteURL := requestOrigin(r)
+	iframe := siteURL + blockURL(s, auth)
 	rewards := "/storefront/" + s.Slug + "/apps/rewards"
 	snippet := fmt.Sprintf(`<iframe id="rewards-frame" title="%s Rewards" src="%s" sandbox="allow-top-navigation allow-scripts allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin" allow="clipboard-write" style="border:0;width:100%%;height:1500px"></iframe>`, s.BrandName, iframe)
 	return linkData{
+		SiteURL:        siteURL,
 		StorefrontURL:  "/storefront/" + s.Slug,
 		RewardsPageURL: rewards,
 		IframeURL:      iframe,
@@ -87,6 +89,21 @@ func (a *app) links(s sandbox, auth string) linkData {
 		IntegrationURL: "/integrations/" + s.Slug,
 		InstallSnippet: snippet,
 	}
+}
+
+func requestOrigin(r *http.Request) string {
+	scheme := strings.TrimSpace(strings.Split(r.Header.Get("X-Forwarded-Proto"), ",")[0])
+	if scheme == "" {
+		scheme = "http"
+		if r.TLS != nil {
+			scheme = "https"
+		}
+	}
+	host := strings.TrimSpace(strings.Split(r.Header.Get("X-Forwarded-Host"), ",")[0])
+	if host == "" {
+		host = r.Host
+	}
+	return (&url.URL{Scheme: scheme, Host: host}).String()
 }
 
 func blockURL(s sandbox, auth string) string {

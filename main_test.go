@@ -75,6 +75,24 @@ func TestSlugifyPrefersShortAcmeSlug(t *testing.T) {
 	}
 }
 
+func TestGeneratedIframeUsesRequestSiteURL(t *testing.T) {
+	a := testApp(t)
+	req := httptest.NewRequest(http.MethodGet, "http://internal:8080/integrations/acme", nil)
+	req.Header.Set("X-Forwarded-Proto", "https")
+	req.Header.Set("X-Forwarded-Host", "demo.example.com")
+
+	links := a.links(req, sandbox{Slug: "acme", BrandName: "Acme Cosmetics"}, "")
+	if links.SiteURL != "https://demo.example.com" {
+		t.Fatalf("site URL = %q, want https://demo.example.com", links.SiteURL)
+	}
+	if links.IframeURL != "https://demo.example.com/blocks/acme/Rewards7" {
+		t.Fatalf("iframe URL = %q, want absolute public URL", links.IframeURL)
+	}
+	if !strings.Contains(links.InstallSnippet, `src="https://demo.example.com/blocks/acme/Rewards7"`) {
+		t.Fatalf("install snippet = %q, want absolute iframe src", links.InstallSnippet)
+	}
+}
+
 func TestUniqueSlugDoesNotOverwrite(t *testing.T) {
 	a := testApp(t)
 	_, err := a.db.Exec(`insert into sandboxes (slug, brand_name, palette, discount_template, created_at) values ('acme', 'Acme Cosmetics', 'black', 'ACME-{VALUE}-OFF', ?)`, time.Now().UTC())

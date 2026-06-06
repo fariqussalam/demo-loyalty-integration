@@ -27,6 +27,7 @@
                             data-copy="{{.StorefrontURL}}
 	{{.RewardsPageURL}}
 	{{.IframeURL}}
+	{{.SiteURL}}
 	{{.AdminURL}}"
                         >
                             <i data-lucide="copy" class="icon"></i>Copy All
@@ -58,6 +59,14 @@
                                 ><small>{{.IframeURL}}</small></span
                             >
                             <em>Open Block</em>
+                        </a>
+                        <a class="link-card" href="{{.SiteURL}}" target="_blank" rel="noopener">
+                            <span class="link-icon">W</span>
+                            <span
+                                ><strong>Site URL</strong
+                                ><small>{{.SiteURL}}</small></span
+                            >
+                            <em>Open Site</em>
                         </a>
                         <a class="link-card" href="{{.AdminURL}}" target="_blank" rel="noopener">
                             <span class="link-icon">A</span>

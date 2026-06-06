@@ -118,6 +118,7 @@ type pointsHistoryEntry struct {
 }
 
 type linkData struct {
+	SiteURL        string
 	IframeURL      string
 	RewardsPageURL string
 	StorefrontURL  string

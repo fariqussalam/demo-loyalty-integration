@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>North & Pine Store</title>
+        <style>
+            :root {
+                color-scheme: light;
+                --paper: oklch(98.5% 0.006 88);
+                --surface: oklch(100% 0.003 88);
+                --ink: oklch(20% 0.018 72);
+                --muted: oklch(52% 0.018 72);
+                --line: oklch(88% 0.012 82);
+                --accent: oklch(48% 0.12 152);
+                --accent-ink: oklch(99% 0.004 88);
+                --shadow: 0 16px 45px oklch(20% 0.02 72 / 0.12);
+                font-family:
+                    Inter,
+                    ui-sans-serif,
+                    system-ui,
+                    -apple-system,
+                    BlinkMacSystemFont,
+                    "Segoe UI",
+                    sans-serif;
+            }
+
+            * {
+                box-sizing: border-box;
+            }
+            body {
+                margin: 0;
+                background: var(--paper);
+                color: var(--ink);
+            }
+            button {
+                font: inherit;
+            }
+            a {
+                color: inherit;
+                text-decoration: none;
+            }
+
+            .site-header {
+                border-bottom: 1px solid var(--line);
+                background: var(--surface);
+            }
+
+            .nav {
+                width: min(100% - 40px, 1180px);
+                min-height: 66px;
+                margin: 0 auto;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 24px;
+            }
+
+            .brand {
+                font-size: 18px;
+                font-weight: 800;
+            }
+
+            .nav-links {
+                display: flex;
+                gap: 22px;
+                color: var(--muted);
+                font-size: 13px;
+                font-weight: 650;
+            }
+
+            .cart-button,
+            .primary-button,
+            .popup-close {
+                display: inline-grid;
+                place-items: center;
+                border: 0;
+                cursor: pointer;
+            }
+
+            .cart-button {
+                width: 38px;
+                height: 38px;
+                border: 1px solid var(--line);
+                border-radius: 6px;
+                background: var(--surface);
+                color: var(--ink);
+            }
+
+            .icon {
+                width: 18px;
+                height: 18px;
+                fill: none;
+                stroke: currentColor;
+                stroke-width: 2;
+                stroke-linecap: round;
+                stroke-linejoin: round;
+            }
+
+            .store-layout {
+                width: min(100% - 40px, 1180px);
+                margin: 38px auto 64px;
+                display: grid;
+                grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+                gap: 48px;
+                align-items: start;
+            }
+
+            .product-image {
+                width: 70%;
+                aspect-ratio: 4 / 5;
+                display: block;
+                object-fit: cover;
+                border-radius: 6px;
+                background: var(--line);
+            }
+
+            .product-detail {
+                padding-top: 10px;
+            }
+            .eyebrow {
+                margin: 0 0 12px;
+                color: var(--muted);
+                font-size: 12px;
+                font-weight: 700;
+                text-transform: uppercase;
+            }
+
+            h1 {
+                margin: 0;
+                font-size: 38px;
+                line-height: 1.08;
+                letter-spacing: 0;
+            }
+
+            .price {
+                margin: 18px 0;
+                font-size: 22px;
+                font-weight: 750;
+            }
+
+            .description {
+                max-width: 54ch;
+                margin: 0 0 26px;
+                color: var(--muted);
+                line-height: 1.7;
+            }
+
+            .primary-button {
+                width: 100%;
+                min-height: 46px;
+                border-radius: 6px;
+                background: var(--accent);
+                color: var(--accent-ink);
+                font-size: 14px;
+                font-weight: 750;
+            }
+
+            .rewards-section {
+                width: min(100% - 40px, 1180px);
+                margin: 0 auto 70px;
+                padding-top: 32px;
+                border-top: 1px solid var(--line);
+            }
+
+            .section-heading {
+                margin-bottom: 18px;
+                display: flex;
+                align-items: end;
+                justify-content: space-between;
+                gap: 20px;
+            }
+
+            .section-heading h2 {
+                margin: 0;
+                font-size: 22px;
+            }
+            .section-heading p {
+                margin: 0;
+                color: var(--muted);
+                font-size: 13px;
+            }
+
+            .rewards-frame {
+                width: 100%;
+                min-height: 360px;
+                display: block;
+                border: 1px solid var(--line);
+                border-radius: 6px;
+                background: var(--surface);
+            }
+
+            .popup {
+                width: min(92vw, 520px);
+                max-height: 88vh;
+                border: 1px solid var(--line);
+                border-radius: 8px;
+                padding: 0;
+                background: var(--surface);
+                box-shadow: var(--shadow);
+            }
+
+            .popup::backdrop {
+                background: oklch(20% 0.018 72 / 0.48);
+            }
+            .popup iframe {
+                width: 100%;
+                height: 620px;
+                display: block;
+                border: 0;
+            }
+
+            .popup-close {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                z-index: 2;
+                width: 34px;
+                height: 34px;
+                border: 1px solid var(--line);
+                border-radius: 6px;
+                background: var(--surface);
+                color: var(--ink);
+            }
+
+            .toast {
+                position: fixed;
+                right: 18px;
+                bottom: 18px;
+                z-index: 10;
+                max-width: min(360px, calc(100vw - 36px));
+                border-radius: 6px;
+                padding: 12px 14px;
+                background: var(--ink);
+                color: var(--paper);
+                box-shadow: var(--shadow);
+                font-size: 13px;
+                font-weight: 700;
+            }
+
+            [hidden] {
+                display: none;
+            }
+
+            @media (max-width: 760px) {
+                .nav-links {
+                    display: none;
+                }
+                .store-layout {
+                    grid-template-columns: 1fr;
+                    gap: 24px;
+                    margin-top: 22px;
+                }
+                .product-detail {
+                    padding-top: 0;
+                }
+                h1 {
+                    font-size: 30px;
+                }
+                .section-heading {
+                    align-items: start;
+                    flex-direction: column;
+                    gap: 6px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <header class="site-header">
+            <nav class="nav" aria-label="Store navigation">
+                <a class="brand" href="#">North & Pine</a>
+                <div class="nav-links">
+                    <a href="#shop">Shop</a>
+                    <a href="#rewards">Rewards</a>
+                    <a href="#about">About</a>
+                </div>
+                <button
+                    class="cart-button"
+                    type="button"
+                    aria-label="Open cart"
+                >
+                    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="8" cy="21" r="1"></circle>
+                        <circle cx="19" cy="21" r="1"></circle>
+                        <path
+                            d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h7.78a2 2 0 0 0 2-1.61L20.05 6H5.12"
+                        ></path>
+                    </svg>
+                </button>
+            </nav>
+        </header>
+
+        <main>
+            <section class="store-layout" id="shop">
+                <img
+                    class="product-image"
+                    src="https://images.pexels.com/photos/4465124/pexels-photo-4465124.jpeg?auto=compress&amp;cs=tinysrgb&amp;w=1000"
+                    alt="Minimal skincare bottle on a neutral surface"
+                />
+                <div class="product-detail">
+                    <p class="eyebrow">Daily essentials</p>
+                    <h1>Barrier Repair Serum</h1>
+                    <p class="price">$24.00</p>
+                    <p class="description">
+                        A lightweight daily serum made with ceramides and oat
+                        extract to support calm, hydrated skin.
+                    </p>
+                    <button class="primary-button" type="button">
+                        Add to Cart
+                    </button>
+                </div>
+            </section>
+
+            <section class="rewards-section" id="rewards">
+                <div class="section-heading">
+                    <h2>Rewards</h2>
+                    <p>Earn points and redeem member discounts.</p>
+                </div>
+                <iframe
+                    id="rewards-frame"
+                    title="North and Pine Rewards"
+                    src="https://loyalty-integration.fariq.xyz/blocks/north-and-pine/Rewards7"
+                    sandbox="allow-top-navigation allow-scripts allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin"
+                    allow="clipboard-write"
+                    style="border: 0; width: 100%; height: 1500px"
+                ></iframe>
+            </section>
+        </main>
+
+        <dialog id="rewards-popup" class="popup">
+            <button
+                id="close-popup"
+                class="popup-close"
+                type="button"
+                aria-label="Close"
+            >
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M18 6 6 18"></path>
+                    <path d="m6 6 12 12"></path>
+                </svg>
+            </button>
+            <iframe id="popup-frame" title="Rewards popup"></iframe>
+        </dialog>
+
+        <div id="toast" class="toast" role="status" hidden></div>
+
+        <script>
+            const backendOrigin = "http://localhost:8080";
+            const rewardsFrame = document.getElementById("rewards-frame");
+            const popup = document.getElementById("rewards-popup");
+            const popupFrame = document.getElementById("popup-frame");
+            const toast = document.getElementById("toast");
+            const authKey = "standaloneRewardsAuth";
+
+            const withBackendOrigin = (value) =>
+                new URL(value, backendOrigin).href;
+
+            const updateRewardsFrame = (auth) => {
+                const url = new URL(rewardsFrame.src);
+                if (auth) url.searchParams.set("auth", auth);
+                else url.searchParams.delete("auth");
+                rewardsFrame.src = url.href;
+            };
+
+            const closePopup = () => {
+                if (popup.open) popup.close();
+                popupFrame.removeAttribute("src");
+            };
+
+            const showToast = (message) => {
+                toast.textContent = message;
+                toast.hidden = false;
+                clearTimeout(showToast.timeout);
+                showToast.timeout = setTimeout(() => {
+                    toast.hidden = true;
+                }, 3200);
+            };
+
+            const storedAuth = localStorage.getItem(authKey);
+            if (storedAuth) updateRewardsFrame(storedAuth);
+
+            document
+                .getElementById("close-popup")
+                .addEventListener("click", closePopup);
+            popup.addEventListener("close", () =>
+                popupFrame.removeAttribute("src"),
+            );
+
+            window.addEventListener("message", (event) => {
+                if (
+                    event.source !== rewardsFrame.contentWindow &&
+                    event.source !== popupFrame.contentWindow
+                )
+                    return;
+                if (event.origin !== backendOrigin) return;
+
+                const data = event.data;
+                if (!data || !data.blockClientCall) return;
+
+                if (data.blockClientCall === "Resize1" && data.height) {
+                    rewardsFrame.style.height = `${Math.max(360, Number(data.height))}px`;
+                }
+
+                if (data.blockClientCall === "OpenPopup1" && data.url) {
+                    popupFrame.src = withBackendOrigin(data.url);
+                    popup.showModal();
+                }
+
+                if (data.blockClientCall === "ClosePopup1") {
+                    closePopup();
+                    if (data.auth) {
+                        localStorage.setItem(authKey, data.auth);
+                        updateRewardsFrame(data.auth);
+                    }
+                    if (data.code) {
+                        showToast(
+                            `Discount code ${data.code} redeemed. Apply it in the merchant cart.`,
+                        );
+                    }
+                }
+
+                if (data.blockClientCall === "Logout1") {
+                    localStorage.removeItem(authKey);
+                    updateRewardsFrame("");
+                }
+            });
+        </script>
+    </body>
+</html>

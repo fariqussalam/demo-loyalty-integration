@@ -113,7 +113,7 @@ func (a *app) result(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		return
 	}
-	data := a.links(s, "")
+	data := a.links(r, s, "")
 	a.render(w, "result.html", resultData{Sandbox: s, linkData: data})
 }
 
@@ -192,7 +192,7 @@ func (a *app) storefront(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	a.render(w, "storefront.html", storefrontData{Sandbox: s, Cart: cart, Orders: orders, linkData: a.links(s, "")})
+	a.render(w, "storefront.html", storefrontData{Sandbox: s, Cart: cart, Orders: orders, linkData: a.links(r, s, "")})
 }
 
 func (a *app) buy(w http.ResponseWriter, r *http.Request) {
@@ -368,7 +368,7 @@ func (a *app) rewardsHost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	auth := r.URL.Query().Get("auth")
-	links := a.links(s, auth)
+	links := a.links(r, s, auth)
 	a.render(w, "rewards_host.html", rewardsHostData{Sandbox: s, IframeURL: links.IframeURL, linkData: links})
 }
 
@@ -651,7 +651,7 @@ func (a *app) admin(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	a.render(w, "admin.html", adminData{Sandbox: s, Customers: customers, linkData: a.links(s, "")})
+	a.render(w, "admin.html", adminData{Sandbox: s, Customers: customers, linkData: a.links(r, s, "")})
 }
 
 func (a *app) adminCustomer(w http.ResponseWriter, r *http.Request) {
@@ -694,7 +694,7 @@ func (a *app) adminCustomer(w http.ResponseWriter, r *http.Request) {
 		Customers:  customers,
 		Activities: activities,
 		Traces:     traces,
-		linkData:   a.links(s, ""),
+		linkData:   a.links(r, s, ""),
 	}
 	a.render(w, "admin.html", data)
 }
