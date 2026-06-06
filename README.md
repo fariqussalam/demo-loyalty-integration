@@ -23,4 +23,5 @@ Open `http://localhost:8080`.
 6. Open **Admin** and refresh.
 
 ## Stack
-- Golang + HTML Templating Engine, Vanilla JS.
+- Golang + HTML Templating Engine, Vanilla JS
+- SQLite for DB
